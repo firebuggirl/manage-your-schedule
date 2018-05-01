@@ -1,0 +1,12 @@
+mixin flashes()
+
+if locals.flashes
+ -//pre= h.dump(locals)
+  .inner
+    .flash-messages
+      - const categories = Object.keys(locals.flashes)
+      each category in categories
+        each message in flashes[category]
+          .flash(class=`flash--${category}`)
+            p.flash__text!= message
+            button.flash__remove(onClick="this.parentElement.remove()") &times;

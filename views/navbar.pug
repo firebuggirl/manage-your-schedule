@@ -1,0 +1,28 @@
+nav.navbar.navbar-fixed-top.navbar-dark.bg-inverse
+  button.navbar-toggler.hidden-md-up.pull-xs-right(type='button', data-toggle='collapse', data-target='#navbar') &#x2630;
+  #navbar.navbar-nav.collapse.navbar-toggleable-sm
+    .container
+      a.navbar-brand(href='/')
+        i.icn-logo.material-icons bookmark_border
+        | MYS
+      .nav-items.clearfix
+        //-if !currentUserFb
+        if !currentUser
+          a.nav-item.nav-link(href='register') Sign Up
+        a.nav-item.nav-link(href='/todo/create') Create new todo
+        a.nav-item.nav-link(href='/todos/') Todo List
+
+
+
+
+
+
+      //-if currentUserFb && currentUser
+      if currentUser
+        div
+          img.checkmark.img-circle.hidden-xs-down(src='/images/checkmark.svg', alt='checkmark')
+          a.btn.btn-light.pull-md-right(href='/logout') Log out
+
+      else
+        a.btn.btn-info.pull-md-right(href='login') Login
+        //-a.btn.btn-info.pull-md-right(href='/auth/facebook/callback') Login

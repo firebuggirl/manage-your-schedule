@@ -1,0 +1,38 @@
+[
+   {
+
+     "name": "MongoDB",
+     "details": "Itaque corrupti maxime ipsa eum odit vero cupiditate nihil delectus."
+
+   },
+   {
+
+     "name": "Docker",
+     "details": "Voluptate fugit soluta repellendus assumenda et dolore consequatur dolores."
+   },
+   {
+
+     "name": "ES6",
+     "details": "Voluptate fugit soluta repellendus assumenda et dolore consequatur dolores."
+   },
+   {
+
+     "name": "Angular",
+     "details": "Voluptate fugit soluta repellendus assumenda et dolore consequatur dolores."
+   },
+   {
+
+     "name": "Ionic",
+     "details": "Voluptate fugit soluta repellendus assumenda et dolore consequatur dolores."
+   },
+   {
+
+     "name": "React",
+     "details": "Voluptate fugit soluta repellendus assumenda et dolore consequatur dolores."
+   },
+   {
+
+     "name": "Kubernetes",
+     "details": "Voluptate fugit soluta repellendus assumenda et dolore consequatur dolores."
+   }
+ ]

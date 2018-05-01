@@ -1,0 +1,14 @@
+extends layout
+
+include mixins/_login
+include mixins/_forgot
+include mixins/_facebookauth
+include mixins/_register
+
+block content
+  .inner.main
+    //-+faceBookAuth()
+    +loginForm()
+    //-+forgotForm()
+    //-+faceBookAuth()
+    //-+register()

@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  .main.container.clearfix
+    .row
+      .col-md-8.col-md-offset-2
+        h1.display-4
+          //-img.checkmark.img-circle.hidden-xs-down(src='/images/checkmark.png', alt='checkmark')
+          | #{name}
+          | #{fbuser}
+
+    ul
+    each val in list_todos
+      li
+        a(href=val.url) #{val.name}
+
+    else
+      li There are no todos.

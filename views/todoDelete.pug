@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  .main.container.clearfix
+    .col-md-8.col-md-offset-2
+      h1.display-4 Delete Todo: #{todo.name}
+
+
+      p Do you really want to delete this Todo item?
+
+      form(method='POST' action='')
+        div.form-group
+          input#id.form-control(type='hidden',name='id', required='true', value=todo._id )
+
+        button.btn.btn-primary(type='submit') Delete

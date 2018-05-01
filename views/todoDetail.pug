@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  .main.container.clearfix
+    .col-md-8.col-md-offset-2
+      h1.display-4 Todo: #{todo.name}
+      h2 Details: #{todo.details}
+      hr
+      h3
+        a(href=todo.url+'/delete') Delete todo
+      h3
+        a(href=todo.url+'/update') Update todo
+
+  //-h1 Todo: #{todo.name}
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Books
+
+    //-dl
+    //-each book in todo_books
+      //-dt
+        //-a(href=book.url) #{book.title}
+      //-dd #{book.summary}
+
+    //-else
+      //-p This todo has no books.

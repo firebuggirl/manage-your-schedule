@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  .main.container.clearfix
+    .col-md-8.col-md-offset-2
+      h1.display-4 #{title}
+      form(method='POST' action='')
+        //-div.form-group
+          //-label(for='author') Todo:
+          //-input#author.form-control(type='text', placeholder='Author' name='author' required='true' value=(undefined===todo ? '' : todo.author)
+        div.form-group
+          label(for='name') Todo:
+          input#name.form-control(type='text', placeholder='Node.js, MongoDB, Angular, React, Docker..etc.' name='name' required='true' value=(undefined===todo ? '' : todo.name) )
+        div.form-group
+          label(for='details') Details:
+          textarea#details.form-control(type='text', placeholder='Details' name='details' required='true' value=(undefined===todo ? '' : todo.details) )
+        button.btn.btn-primary(type='submit') Submit
+
+      if errors
+        ul
+          for error in errors
+            li!= error.msg
+
+
+
+
+  //-form(method='POST' action='')
