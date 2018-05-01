@@ -2,7 +2,7 @@
 
   - do enable auth from within Docker container 1st run this command:
 
-          ` docker ecex -it <container-number> sh `
+          ` docker exec -it <container-number> sh `
 
   ` mongod --port 27017 --dbpath /data/db `//no need to run this from within Docker container as it is already running..use this locally
 
