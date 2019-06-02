@@ -26,7 +26,7 @@ const Strategy = require('passport-facebook').Strategy;
      callbackURL: '//localhost:3002/auth/facebook/callback',
       profileFields: ['id', 'email', 'name']
    },
-   function(accessToken, refreshToken, profile, cb) {
+   (accessToken, refreshToken, profile, cb) => {
      // In this example, the user's Facebook profile is supplied as the user
      // record.  In a production-quality application, the Facebook profile should
      // be associated with a user record in the application's database, which
@@ -45,11 +45,11 @@ const Strategy = require('passport-facebook').Strategy;
  // from the database when deserializing.  However, due to the fact that this
  // example does not have a database, the complete Facebook profile is serialized
  // and deserialized.
- passport.serializeUser(function(user, cb) {
+ passport.serializeUser((user, cb) => {
    cb(null, user);
  });
 
- passport.deserializeUser(function(obj, cb) {
+ passport.deserializeUser((obj, cb) => {
    cb(null, obj);
  });
 
@@ -65,18 +65,18 @@ const Strategy = require('passport-facebook').Strategy;
  router.use(passport.initialize());
  router.use(passport.session());
 
- router.use(function (req, res, next) {
+ router.use((req, res, next) => {
    res.locals.currentUser = req.session.userId;
    res.locals.currentUserFb = req.user;
    next();
  });
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/',(req, res, next) => {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/create', mid.requiresLogin, function(req, res, next) {
+router.get('/create', mid.requiresLogin,(req, res, next) => {
   return res.render('create', { title: 'Create Event' });
 });
 
@@ -84,9 +84,9 @@ router.get('/create', mid.requiresLogin, function(req, res, next) {
   // router.get('/events', catchErrors(eventController.getEvents));
   // router.get('/events/page/:page', catchErrors(eventController.getEvents));
 
-  router.get('/events', mid.requiresLogin, function(req, res, next) {
+  router.get('/events', mid.requiresLogin,(req, res, next) => {
     User.findById(req.session.userId)
-        .exec(function (error, user) {
+        .exec((error, user) => {
           if (error) {
 
             return next(error);
@@ -94,16 +94,14 @@ router.get('/create', mid.requiresLogin, function(req, res, next) {
 
           } else {
              return res.render('events', { title: 'Event', name: user.name, text: user.text, start: user.start});//values are shown in browser via interpolation/variables in profile.pug ....ex: #{food}
-             //return res.render('profile', { title: 'Profile', fbuser:req.name, name:user.name,  favorite: user.favoriteBook, band: user.favoriteBand, food: user.favoriteFood  });//values are shown in browser via interpolation/variables in profile.pug ....ex: #{food}
-
           }
         });
   });
 
-  router.post('/events', function(req, res, next) {
+  router.post('/events', (req, res, next) => {
 
 
-          User.findById(req.session.userId, function(err, User) {
+          User.findById(req.session.userId, (err, User) => {
 
               if (err)
                   res.send(err);
@@ -113,7 +111,7 @@ router.get('/create', mid.requiresLogin, function(req, res, next) {
 
               //User.end = req.body.end;
               // save the new user info
-              User.save(function(err) {
+              User.save((err) => {
                   if (err)
                       res.send(err);
 
@@ -129,10 +127,10 @@ router.get('/create', mid.requiresLogin, function(req, res, next) {
 
 
     // GET /logout
-router.get('/logout', function(req, res, next) {
+router.get('/logout', (req, res, next) => {
   if (req.session) {
     // delete session object
-    req.session.destroy(function(err) {
+    req.session.destroy((err) => {
       if(err) {
         return next(err);
       } else {
@@ -143,15 +141,15 @@ router.get('/logout', function(req, res, next) {
 });
 
 // GET /login
-//router.get('/login', Event.loggedOutFb, function(req, res, next) {
-router.get('/login', mid.loggedOut, function(req, res, next) {
+//router.get('/login', Event.loggedOutFb,(req, res, next) => {
+router.get('/login', mid.loggedOut,(req, res, next) => {
   return res.render('login', { title: 'Log In'});
 });
 
 //POST /login
-router.post('/login', function(req, res, next) {
+router.post('/login',(req, res, next) => {
   if (req.body.email && req.body.password) {
-    User.authenticate(req.body.email, req.body.password, function (error, user) {
+    User.authenticate(req.body.email, req.body.password,(error, user) => {
       if (error || !user) {
         //const err = new Error('Wrong email or password.');
        req.flash('error', 'No account with that email exists.');
@@ -181,13 +179,13 @@ router.post('/account/forgot', catchErrors(authController.forgot));
 
 
 // GET /register
-//router.get('/register', Event.loggedOut && Event.loggedInFb, function(req, res, next) {
+//router.get('/register', Event.loggedOut && Event.loggedInFb,(req, res, next) => {
 router.get('/register', mid.loggedOut, (req, res, next) => {
   return res.render('register', { title: 'Sign Up' });
 });
 
 // POST /register
-router.post('/register', mid.loggedOut, function(req, res, next) {
+router.post('/register', mid.loggedOut, (req, res, next) => {
   if (req.body.email &&
     req.body.name &&
     req.body.password &&
@@ -209,7 +207,7 @@ router.post('/register', mid.loggedOut, function(req, res, next) {
       };
 
       // use schema's `create` method to insert document into Mongo
-      User.create(userData, function (error, user) {
+      User.create(userData, (error, user) => {
         if (error) {
           return next(error);
         } else {

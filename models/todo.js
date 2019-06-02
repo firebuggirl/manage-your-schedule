@@ -12,7 +12,7 @@ const TodoSchema = new mongoose.Schema({
 // Virtual for this todo instance URL.
 TodoSchema
 .virtual('url')
-.get(function () {
+.get(() => {
   //return '/catalog/todo/'+this._id;
     return '/todo/'+this._id;
 });

@@ -20,42 +20,12 @@ const UserSchema = new mongoose.Schema({
       required: true,
       trim: true
     },
-  //   favoriteBook: {
-  //     type: String,
-  //     required: true,
-  //     trim: true
-  //   },
-  //   favoriteBand: {
-  //     type: String,
-  //     required: true,
-  //     trim: true
-  //   },
-  //   favoriteFood: {
-  //     type: String,
-  //     required: true,
-  //     trim: true
-  //   },
-  //   text: {
-  //     type: String
-  //   //  ref: 'User'
-  // },
-  // start:{
-  //   type: Date
-  // },
     password: {
       type: String,
       required: true
     },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
-  //   data: {
-  //   oauth: { type: String, required: true }
-  // }
-    // newFavoriteBook: {
-    //      type: String,
-    //      required: true,
-    //      trim: true
-    //    }
 });
 
 
@@ -67,9 +37,9 @@ mongoSanitize.sanitize(UserSchema, { //added Tues, June 20th...check to see if w
 });
 
 // authenticate input against database documents
-UserSchema.statics.authenticate = function(email, password, callback) {
+UserSchema.statics.authenticate = (email, password, callback) => {
   User.findOne({ email: email })
-      .exec(function (error, user) {
+      .exec((error, user) => {
         if (error) {
           return callback(error);
         } else if ( !user ) {
@@ -77,7 +47,7 @@ UserSchema.statics.authenticate = function(email, password, callback) {
           err.status = 401;
           return callback(err);
         }
-        bcrypt.compare(password, user.password , function(error, result) {
+        bcrypt.compare(password, user.password , (error, result) => {
           if (result === true) {
             return callback(null, user);
           } else {
@@ -87,9 +57,9 @@ UserSchema.statics.authenticate = function(email, password, callback) {
       });
 };
 // hash password before saving to database
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', (next) => {
   const user = this;
-  bcrypt.hash(user.password, 10, function(err, hash) {
+  bcrypt.hash(user.password, 10, (err, hash) => {
     if (err) {
       return next(err);
     }
@@ -101,20 +71,3 @@ const User = mongoose.model('User', UserSchema);//model method creates schema
 module.exports = User;
 
 UserSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
-
-// const UserSchema2 = new mongoose.Schema({
-//
-//     newFavoriteBook: {
-//       type: String,
-//       required: true,
-//       trim: true
-//     }
-// });
-// //
-//  const UserUpdate = mongoose.model('UserUpdate', UserSchema2);
-//  module.exports = UserUpdate;
-
-
-//Note:
-//was able to update favoriteBook in shell:
-// db.users.update({_id:ObjectId("5898e0659946de61e3e3e698")},{$set:{favoriteBook:"Rolling Stones Biography"}})

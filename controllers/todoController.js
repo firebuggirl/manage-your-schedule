@@ -1,18 +1,17 @@
 'use strict';
 
 const Todo = require('../models/todo');
-//const Book = require('../models/book');
 const async = require('async');
 const expressValidator = require('express-validator');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
 // Display list of all Todo.
-exports.todoList = function(req, res, next) {
+exports.todoList = (req, res, next) => {
 
   Todo.find()
     .sort([['name', 'ascending']])
-    .exec(function (err, list_todos) {
+    .exec((err, list_todos) => {
       if (err) { return next(err); }
       // Successful, so render.
       res.render('todos', { title: 'Todo List', list_todos:  list_todos});
@@ -23,7 +22,7 @@ exports.todoList = function(req, res, next) {
 
 //
 // Display Todo create form on GET.
-exports.todocreateget = function(req, res, next) {
+exports.todocreateget = (req, res, next) => {
     res.render('todoform', { title: 'Create Todo'});
 };
 //
@@ -61,19 +60,10 @@ exports.todoCreatePost = [
             // Data from form is valid.
             // Check if Todo with same name already exists.
             Todo.findOne({ 'name': req.body.name })
-                //.exec( function(err, foundTodo) {
-                .exec( function(err) {
+                .exec((err) => {
                      if (err) { return next(err); }
 
-                     //return err;
-                     // if (foundTodo) {
-                     //     // Todo exists, redirect to its detail page.
-                     //     //res.redirect(foundTodo);
-                     //   //res.redirect('/todos');
-                     // }
-                    // else {
-
-                         todo.save(function (err) {
+                         todo.save((err) => {
                            if (err) { return next(err); }
                            // Todo saved. Redirect to todo detail page.
                            res.redirect(todo.url);
@@ -82,29 +72,23 @@ exports.todoCreatePost = [
 
                          });
 
-                     //}
-
                  });
         }
     }
 ];
 
 // Display detail page for a specific Todo.
-exports.todoDetail = function(req, res, next) {
+exports.todoDetail = (req, res, next) => {
 
     async.parallel({
-        todo: function(callback) {
+        todo: (callback) => {
 
             Todo.findById(req.params.id)
               .exec(callback);
         },
 
-        // todo_books: function(callback) {
-        //   Book.find({ 'todo': req.params.id })
-        //   .exec(callback);
-        // },
 
-    }, function(err, results) {
+    }, (err, results) => {
         //if (err) { return next(err); }
         if (results.todo===null || results.details===null) { // No results.
             //const err = new Error('Todo not found');
@@ -112,7 +96,6 @@ exports.todoDetail = function(req, res, next) {
             return next(err);
         }
         // Successful, so render.
-        //res.render('todoDetail', { title: 'Todo Detail', todo: results.todo, todo_books: results.todo_books } );
         res.render('todoDetail', { title: 'Todo Detail', todo: results.todo, details: results.details } );
     });
 
@@ -120,16 +103,13 @@ exports.todoDetail = function(req, res, next) {
 
 
 // Display Todo delete form on GET.
-exports.todoDeleteGet = function(req, res, next) {
+exports.todoDeleteGet = (req, res, next) => {
 
     async.parallel({
-        todo: function(callback) {
+        todo: (callback) => {
             Todo.findById(req.params.id).exec(callback);
         },
-        // todo_books: function(callback) {
-        //     Book.find({ 'todo': req.params.id }).exec(callback);
-        // },
-    }, function(err, results) {
+    }, (err, results) => {
         if (err) { return next(err); }
         if (results.Todo===null) { // No results.
             res.redirect('/todos');
@@ -142,26 +122,22 @@ exports.todoDeleteGet = function(req, res, next) {
 
 
 // Handle Todo delete on POST.
-exports.todoDeletePost = function(req, res, next) {
+exports.todoDeletePost = (req, res, next) => {
 
     async.parallel({
-        todo: function(callback) {
+        todo: (callback) => {
             Todo.findById(req.params.id).exec(callback);
         },
-        // todo_books: function(callback) {
-        //     Book.find({ 'todo': req.params.id }).exec(callback);
-        // },
-    }, function(err, results) {
+    }, (err, results) => {
         if (err) { return next(err); }
         // Success
-        //if (results.todo_books.length > 0) {
         if (results.todo > 0) {
-            // Todo has books. Render in same way as for GET route.
+            // Todo has todos. Render in same way as for GET route.
             res.render('todoDelete', { title: 'Delete Todo', todo: results.todo } );
             return;
         }
         else {
-            // Todo has no books. Delete object and redirect to the list of todos.
+            // Todo has no todos. Delete object and redirect to the list of todos.
             Todo.findByIdAndRemove(req.body.id, function deleteTodo(err) {
                 if (err) { return next(err); }
                 // Success - go to todos list.
@@ -175,9 +151,9 @@ exports.todoDeletePost = function(req, res, next) {
 
 
 // Display Todo update form on GET.
-exports.todoUpdateGet = function(req, res, next) {
+exports.todoUpdateGet = (req, res, next) => {
 
-    Todo.findById(req.params.id, function(err, todo) {
+    Todo.findById(req.params.id, (err, todo) => {
         if (err) { return next(err); }
         if (todo==null) { // No results.
             const err = new Error('Todo not found');
