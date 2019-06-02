@@ -19,8 +19,8 @@ if (major <= 7 && minor <= 5) {
   process.exit();
 }
 
-//mongoose.connect(process.env.LOCAL_DB);
-mongoose.connect(process.env.DATABASE || process.env.LOCAL_DB);
+mongoose.connect(process.env.LOCAL_DB);
+//mongoose.connect(process.env.DATABASE || process.env.LOCAL_DB);
 
 mongoose.Promise = global.Promise; // Tell Mongoose to use ES6 promises
 mongoose.connection.on('error', (err) => {

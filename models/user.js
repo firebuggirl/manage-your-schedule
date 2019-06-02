@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt'); //password hashing function
+var bcrypt = require('bcryptjs'); //password hashing function
 const validator = require('validator');//validate email
 const passportLocalMongoose = require('passport-local-mongoose');
 const mongoSanitize = require('express-mongo-sanitize');//added June 20th, test to see if working...

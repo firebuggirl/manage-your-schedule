@@ -5,7 +5,7 @@ var User = require('../models/user');
 var mid = require('../middleware');
 
 //var methodOverride = require('method-override');//use this Eventdleware to be able to conduct a put request on a form to update data
-//const userController = require('../controllers/userController');
+const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 //const eventController = require('../controllers/eventController');
 const { catchErrors } = require('../handlers/errorHandlers');
@@ -16,22 +16,25 @@ var todoController = require('../controllers/todoController');
 var passport = require('passport');
 passport.initialize();
 
-// var Strategy = require('passport-facebook').Strategy;
-//
-//  passport.use(new Strategy({
-//      clientID: process.env.FACEBOOK_CLIENT_ID,
-//      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-//      callbackURL: '//localhost:3002/auth/facebook/callback',
-//       profileFields: ['id', 'email', 'name']
-//    },
-//    function(accessToken, refreshToken, profile, cb) {
-//      // In this example, the user's Facebook profile is supplied as the user
-//      // record.  In a production-quality application, the Facebook profile should
-//      // be associated with a user record in the application's database, which
-//      // allows for account linking and authentication with other identity
-//      // providers.
-//      return cb(null, profile);
-//    }));
+var passport = require('passport');
+passport.initialize();
+ //var FacebookStrategy = require('passport-facebook').FacebookStrategy;
+var Strategy = require('passport-facebook').Strategy;
+
+ passport.use(new Strategy({
+     clientID: process.env.FACEBOOK_CLIENT_ID,
+     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+     callbackURL: '//localhost:3002/auth/facebook/callback',
+      profileFields: ['id', 'email', 'name']
+   },
+   function(accessToken, refreshToken, profile, cb) {
+     // In this example, the user's Facebook profile is supplied as the user
+     // record.  In a production-quality application, the Facebook profile should
+     // be associated with a user record in the application's database, which
+     // allows for account linking and authentication with other identity
+     // providers.
+     return cb(null, profile);
+   }));
 
 
  // Configure Passport authenticated session persistence.
@@ -180,12 +183,12 @@ router.post('/account/forgot', catchErrors(authController.forgot));
 
 // GET /register
 //router.get('/register', Event.loggedOut && Event.loggedInFb, function(req, res, next) {
-router.get('/register', mid.loggedOut, function(req, res, next) {
+router.get('/register', mid.loggedOut, (req, res, next) => {
   return res.render('register', { title: 'Sign Up' });
 });
 
 // POST /register
-router.post('/register', function(req, res, next) {
+router.post('/register', mid.loggedOut, function(req, res, next) {
   if (req.body.email &&
     req.body.name &&
     req.body.password &&
