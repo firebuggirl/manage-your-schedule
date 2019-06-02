@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var User = require('../models/user');
+const express = require('express');
+const router = express.Router();
+const User = require('../models/user');
 //let Event = require('../models/event');
-var mid = require('../middleware');
+const mid = require('../middleware');
 
-//var methodOverride = require('method-override');//use this Eventdleware to be able to conduct a put request on a form to update data
+//const methodOverride = require('method-override');//use this Eventdleware to be able to conduct a put request on a form to update data
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 //const eventController = require('../controllers/eventController');
@@ -12,14 +12,13 @@ const { catchErrors } = require('../handlers/errorHandlers');
 const flash = require('connect-flash');
 require('dotenv').config({ path: '../variables.env' });
 
-var todoController = require('../controllers/todoController');
-var passport = require('passport');
-passport.initialize();
+const todoController = require('../controllers/todoController');
 
-var passport = require('passport');
+
+const passport = require('passport');
 passport.initialize();
- //var FacebookStrategy = require('passport-facebook').FacebookStrategy;
-var Strategy = require('passport-facebook').Strategy;
+ //const FacebookStrategy = require('passport-facebook').FacebookStrategy;
+const Strategy = require('passport-facebook').Strategy;
 
  passport.use(new Strategy({
      clientID: process.env.FACEBOOK_CLIENT_ID,
@@ -154,7 +153,7 @@ router.post('/login', function(req, res, next) {
   if (req.body.email && req.body.password) {
     User.authenticate(req.body.email, req.body.password, function (error, user) {
       if (error || !user) {
-        //var err = new Error('Wrong email or password.');
+        //const err = new Error('Wrong email or password.');
        req.flash('error', 'No account with that email exists.');
         //err.status = 401;
         return next();
@@ -166,7 +165,7 @@ router.post('/login', function(req, res, next) {
     });
   }
   else {
-    var err = new Error('Email and password are required.');
+    const err = new Error('Email and password are required.');
 
     //req.flash('error', 'Email and password are required.');
     err.status = 401;
@@ -197,13 +196,13 @@ router.post('/register', mid.loggedOut, function(req, res, next) {
 
       // confirm that user typed same password twice
       if (req.body.password !== req.body.confirmPassword) {
-        var err = new Error('Passwords do not match.');
+        const err = new Error('Passwords do not match.');
         err.status = 400;
         return next(err);
       }
 
       // create object with form input
-      var userData = {
+      const userData = {
         email: req.body.email,
         name: req.body.name,
         password: req.body.password
@@ -220,7 +219,7 @@ router.post('/register', mid.loggedOut, function(req, res, next) {
       });
 
     } else {
-      var err = new Error('All fields required.');
+      const err = new Error('All fields required.');
       err.status = 400;
       return next(err);
     }
