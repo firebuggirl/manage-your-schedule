@@ -73,7 +73,7 @@ const Strategy = require('passport-facebook').Strategy;
 
 /* GET home page. */
 router.get('/',(req, res, next) => {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Manage Your Schedule' });
 });
 
 router.get('/create', mid.requiresLogin,(req, res, next) => {
