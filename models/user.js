@@ -57,9 +57,9 @@ UserSchema.statics.authenticate = (email, password, callback) => {
       });
 };
 // hash password before saving to database
-UserSchema.pre('save', (next) => {
+UserSchema.pre('save', function(next) {//arrow function causes 500 server error here...don't use
   const user = this;
-  bcrypt.hash(user.password, 10, (err, hash) => {
+  bcrypt.hash(user.password, 10, function(err, hash) {
     if (err) {
       return next(err);
     }
