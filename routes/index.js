@@ -1,13 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
-//let Event = require('../models/event');
 const mid = require('../middleware');
 
 //const methodOverride = require('method-override');//use this Eventdleware to be able to conduct a put request on a form to update data
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
-//const eventController = require('../controllers/eventController');
 const { catchErrors } = require('../handlers/errorHandlers');
 const flash = require('connect-flash');
 require('dotenv').config({ path: '../variables.env' });
@@ -76,57 +74,7 @@ router.get('/',(req, res, next) => {
   res.render('index', { title: 'Manage Your Schedule' });
 });
 
-router.get('/create', mid.requiresLogin,(req, res, next) => {
-  return res.render('create', { title: 'Create Event' });
-});
-
-
-  // router.get('/events', catchErrors(eventController.getEvents));
-  // router.get('/events/page/:page', catchErrors(eventController.getEvents));
-
-  router.get('/events', mid.requiresLogin,(req, res, next) => {
-    User.findById(req.session.userId)
-        .exec((error, user) => {
-          if (error) {
-
-            return next(error);
-            return res.redirect('/login');
-
-          } else {
-             return res.render('events', { title: 'Event', name: user.name, text: user.text, start: user.start});//values are shown in browser via interpolation/variables in profile.pug ....ex: #{food}
-          }
-        });
-  });
-
-  router.post('/events', (req, res, next) => {
-
-
-          User.findById(req.session.userId, (err, User) => {
-
-              if (err)
-                  res.send(err);
-
-              User.text = req.body.text;  // update the user info
-              User.start = req.body.start;
-
-              //User.end = req.body.end;
-              // save the new user info
-              User.save((err) => {
-                  if (err)
-                      res.send(err);
-
-                  return res.render('events', { text: User.text, start: User.start});
-                //  res.json({ message: 'User updated!' });
-              });
-
-          });
-
-
-      });
-
-
-
-    // GET /logout
+  // GET /logout
 router.get('/logout', (req, res, next) => {
   if (req.session) {
     // delete session object
@@ -141,7 +89,6 @@ router.get('/logout', (req, res, next) => {
 });
 
 // GET /login
-//router.get('/login', Event.loggedOutFb,(req, res, next) => {
 router.get('/login', mid.loggedOut,(req, res, next) => {
   return res.render('login', { title: 'Log In'});
 });
@@ -179,9 +126,6 @@ router.post('/account/forgot', catchErrors(authController.forgot));
 
 
 // GET /register
-//router.get('/register', Event.loggedOut && Event.loggedInFb,(req, res, next) => {
-
-
 router.get('/register', mid.loggedOut, userController.registerForm);
 router.post('/register',
   mid.loggedOut,
