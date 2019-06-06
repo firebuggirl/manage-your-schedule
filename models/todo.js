@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
-const Schema = mongoose.Schema;
+//const Schema = mongoose.Schema;
 
 
 const TodoSchema = new mongoose.Schema({
@@ -8,6 +8,7 @@ const TodoSchema = new mongoose.Schema({
     details: { type: String, min: 3, Max: 200},
     todoId: { type: mongoose.Schema.ObjectId,  ref: 'User' },
 });
+
 
 // Virtual for this todo instance URL.
 TodoSchema
