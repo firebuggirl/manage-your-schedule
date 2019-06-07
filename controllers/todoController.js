@@ -1,8 +1,8 @@
 'use strict';
 
-var Todo = require('../models/todo');
-//var Book = require('../models/book');
-var async = require('async');
+const Todo = require('../models/todo');
+//const Book = require('../models/book');
+const async = require('async');
 const expressValidator = require('express-validator');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -42,10 +42,10 @@ exports.todoCreatePost = [
     (req, res, next) => {
 
         // Extract the validation errors from a request.
-        const errors = validationResult(req);
+        let errors = validationResult(req);
 
         // Create a todo object with escaped and trimmed data.
-        var todo = new Todo(
+        const todo = new Todo(
           { name: req.body.name,
             details: req.body.details
            }
@@ -107,7 +107,7 @@ exports.todoDetail = function(req, res, next) {
     }, function(err, results) {
         //if (err) { return next(err); }
         if (results.todo===null || results.details===null) { // No results.
-            //var err = new Error('Todo not found');
+            //const err = new Error('Todo not found');
             err.status = 404;
             return next(err);
         }
@@ -180,7 +180,7 @@ exports.todoUpdateGet = function(req, res, next) {
     Todo.findById(req.params.id, function(err, todo) {
         if (err) { return next(err); }
         if (todo==null) { // No results.
-            var err = new Error('Todo not found');
+            const err = new Error('Todo not found');
             err.status = 404;
             return next(err);
         }
@@ -206,7 +206,7 @@ exports.todoUpdatePost = [
         const errors = validationResult(req);
 
     // Create a todo object with escaped and trimmed data (and the old id!)
-        var todo = new Todo(
+        const todo = new Todo(
           {
           name: req.body.name,
           details: req.body.details,

@@ -4,7 +4,7 @@ const validator = require('validator');//validate email
 const passportLocalMongoose = require('passport-local-mongoose');
 const mongoSanitize = require('express-mongo-sanitize');//added June 20th, test to see if working...
 mongoose.Promise = global.Promise;
-
+const Todo = require('./todo');
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -39,8 +39,14 @@ UserSchema.virtual('todos', {
     ref: 'Todo',
     localField: '_id',
     foreignField: 'todoId'
-})
+});
 
+// Delete user tasks when user is removed
+UserSchema.pre('remove', async function (next) {
+    const user = this
+    await Todo.deleteMany({ todoId: user._id })
+    next()
+});
 mongoSanitize.sanitize(UserSchema); //added Tues, June 20th...check to see if working
 
 mongoSanitize.sanitize(UserSchema, { //added Tues, June 20th...check to see if working

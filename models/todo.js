@@ -1,9 +1,9 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
 
-var TodoSchema = new mongoose.Schema({
+const TodoSchema = new mongoose.Schema({
     name: {type: String, required: true, min: 3, max: 100, unique: true},
     details: { type: String, min: 3, Max: 200},
     todoId: { type: mongoose.Schema.ObjectId,  ref: 'User' },
