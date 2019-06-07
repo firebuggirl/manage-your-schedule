@@ -41,7 +41,7 @@ const app = require('./app');
  // app.listen(PORT, HOST);
  // console.log(`Running on http://${HOST}:${PORT}`);
 
-const port = process.env.PORT || 3000;
+var port = process.env.PORT || 3000;
 
 app.set('port', process.env.PORT || 3000);
 const server = app.listen(app.get('port'), () => {

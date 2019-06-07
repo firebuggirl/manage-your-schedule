@@ -7,13 +7,6 @@ const promisify = require('es6-promisify');
 const mail = require('../handlers/mail');
 
 
-exports.login = passport.authenticate('local', {//middlewart that comes with passport
-  failureRedirect: '/login',
-  failureFlash: 'Failed Login!',
-  successRedirect: '/',
-  successFlash: 'You are now logged in!'
-});
-
 exports.forgot = async (req, res) => {
   // 1. See if a user with that email exists
   const user = await User.findOne({ email: req.body.email });//find user's email in DB

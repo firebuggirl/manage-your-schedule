@@ -1,22 +1,23 @@
-const express = require('express');
-const router = express.Router();
-const User = require('../models/user');
-const mid = require('../middleware');
+var express = require('express');
+var router = express.Router();
+var User = require('../models/user');
+var mid = require('../middleware');
 
-//const methodOverride = require('method-override');//use this Eventdleware to be able to conduct a put request on a form to update data
+//var methodOverride = require('method-override');//use this Eventdleware to be able to conduct a put request on a form to update data
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 const { catchErrors } = require('../handlers/errorHandlers');
 const flash = require('connect-flash');
 require('dotenv').config({ path: '../variables.env' });
 
-const todoController = require('../controllers/todoController');
-
-
-const passport = require('passport');
+var todoController = require('../controllers/todoController');
+var passport = require('passport');
 passport.initialize();
- //const FacebookStrategy = require('passport-facebook').FacebookStrategy;
-const Strategy = require('passport-facebook').Strategy;
+
+var passport = require('passport');
+passport.initialize();
+ //var FacebookStrategy = require('passport-facebook').FacebookStrategy;
+var Strategy = require('passport-facebook').Strategy;
 
  passport.use(new Strategy({
      clientID: process.env.FACEBOOK_CLIENT_ID,
@@ -24,7 +25,7 @@ const Strategy = require('passport-facebook').Strategy;
      callbackURL: '//localhost:3002/auth/facebook/callback',
       profileFields: ['id', 'email', 'name']
    },
-   (accessToken, refreshToken, profile, cb) => {
+   function(accessToken, refreshToken, profile, cb) {
      // In this example, the user's Facebook profile is supplied as the user
      // record.  In a production-quality application, the Facebook profile should
      // be associated with a user record in the application's database, which
@@ -43,11 +44,11 @@ const Strategy = require('passport-facebook').Strategy;
  // from the database when deserializing.  However, due to the fact that this
  // example does not have a database, the complete Facebook profile is serialized
  // and deserialized.
- passport.serializeUser((user, cb) => {
+ passport.serializeUser(function(user, cb) {
    cb(null, user);
  });
 
- passport.deserializeUser((obj, cb) => {
+ passport.deserializeUser(function(obj, cb) {
    cb(null, obj);
  });
 
@@ -63,22 +64,27 @@ const Strategy = require('passport-facebook').Strategy;
  router.use(passport.initialize());
  router.use(passport.session());
 
- router.use((req, res, next) => {
+ router.use(function (req, res, next) {
    res.locals.currentUser = req.session.userId;
    res.locals.currentUserFb = req.user;
    next();
  });
 
 /* GET home page. */
-router.get('/',(req, res, next) => {
-  res.render('index', { title: 'Manage Your Schedule' });
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Express' });
 });
 
-  // GET /logout
-router.get('/logout', (req, res, next) => {
+router.get('/create', mid.requiresLogin, function(req, res, next) {
+  return res.render('create', { title: 'Create Event' });
+});
+
+
+// GET /logout
+router.get('/logout', function(req, res, next) {
   if (req.session) {
     // delete session object
-    req.session.destroy((err) => {
+    req.session.destroy(function(err) {
       if(err) {
         return next(err);
       } else {
@@ -89,16 +95,16 @@ router.get('/logout', (req, res, next) => {
 });
 
 // GET /login
-router.get('/login', mid.loggedOut,(req, res, next) => {
+router.get('/login', mid.loggedOut, function(req, res, next) {
   return res.render('login', { title: 'Log In'});
 });
 
 //POST /login
-router.post('/login',(req, res, next) => {
+router.post('/login', function(req, res, next) {
   if (req.body.email && req.body.password) {
-    User.authenticate(req.body.email, req.body.password,(error, user) => {
+    User.authenticate(req.body.email, req.body.password, function (error, user) {
       if (error || !user) {
-        //const err = new Error('Wrong email or password.');
+        //var err = new Error('Wrong email or password.');
        req.flash('error', 'No account with that email exists.');
         //err.status = 401;
         return next();
@@ -110,7 +116,7 @@ router.post('/login',(req, res, next) => {
     });
   }
   else {
-    const err = new Error('Email and password are required.');
+    var err = new Error('Email and password are required.');
 
     //req.flash('error', 'Email and password are required.');
     err.status = 401;
@@ -126,13 +132,49 @@ router.post('/account/forgot', catchErrors(authController.forgot));
 
 
 // GET /register
-router.get('/register', mid.loggedOut, userController.registerForm);
-router.post('/register',
-  mid.loggedOut,
-  userController.validateRegister,
-  userController.register,
-  authController.login
-);
+router.get('/register', mid.loggedOut, (req, res, next) => {
+  return res.render('register', { title: 'Sign Up' });
+});
+
+// POST /register
+router.post('/register', mid.loggedOut, function(req, res, next) {
+  if (req.body.email &&
+    req.body.name &&
+    req.body.password &&
+    req.body.confirmPassword
+    ) {
+
+      // confirm that user typed same password twice
+      if (req.body.password !== req.body.confirmPassword) {
+        var err = new Error('Passwords do not match.');
+        err.status = 400;
+        return next(err);
+      }
+
+      // create object with form input
+      var userData = {
+        email: req.body.email,
+        name: req.body.name,
+        password: req.body.password
+      };
+
+      // use schema's `create` method to insert document into Mongo
+      User.create(userData, function (error, user) {
+        if (error) {
+          return next(error);
+        } else {
+          req.session.userId = user._id;
+          return res.redirect('/todos');
+        }
+      });
+
+    } else {
+      var err = new Error('All fields required.');
+      err.status = 400;
+      return next(err);
+    }
+});
+
 
 // GET request for list of all todo.
 router.get('/todos',mid.requiresLogin, todoController.todoList);

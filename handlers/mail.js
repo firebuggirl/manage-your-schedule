@@ -14,7 +14,7 @@ const transport = nodemailer.createTransport({//a way to interface with differen
 });
                     //The block of code sends an email each time the server (ie., nodemon) is started....to test if email gets sent...block this code out when no longer need to test
 // transport.sendMail({//include this in start.js to see if mail gets sent...check in Mailtrap inbox
-//   from: 'Juliette Tworsey <your.email@email.com>',
+//   from: 'Juliette Tworsey <juliette.tworsey@gmail.com>',
 //   to: 'randy@example.com',
 //   subject: 'Just trying things out!',
 //   html: 'Woo hoo cachoo!',
@@ -32,7 +32,7 @@ exports.send = async (options) => {
   const text = htmlToText.fromString(html);
 
   const mailOptions = {
-    from: `Juliette <your.email@email.com>`,
+    from: `Juliette <juliette.tworsey@gmail.com>`,
     to: options.user.email,
     subject: options.subject,
     //filename: 'password-reset',

@@ -6,14 +6,14 @@ block content
       h1.display-4.m-b-2 Sign Up
 
       // register form
-      form(action='/register' method='POST')
+      form(method='POST' action='/register')
         div.form-group
           label(for='name') Name:
           input#name.form-control(type='text', placeholder='first and last' name='name')
         div.form-group
           label(for='email') Email:
           input#email.form-control(type='email', placeholder='name@email.com' name='email')
-
+        
 
         div.form-group
           label(for='pw') Password:

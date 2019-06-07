@@ -1,6 +1,6 @@
 var express = require('express');
-const router = express.Router();
-const passport = require('passport');
+var router = express.Router();
+var passport = require('passport');
 passport.initialize();
 
 
@@ -22,7 +22,7 @@ function requiresLogin(req, res, next) {
   if (req.session && req.session.userId) {
     return next();
   } else {
-    // const err = new Error('You must be logged in to view this page.');
+    // var err = new Error('You must be logged in to view this page.');
     // err.status = 401;
     // return next(err);
     req.flash('error', 'Password reset is invalid or has expired');
@@ -35,7 +35,7 @@ function loggedInFb(req, res, next){
 
     return next();
   } else {
-    const err = new Error('You must be logged in to Facebook to view this page.');
+    var err = new Error('You must be logged in to Facebook to view this page.');
     err.status = 401;
     return next(err);
   }
@@ -44,7 +44,7 @@ function isLoggedIn(req, res, next){
   if (req.session && req.session.userId) {
     return next();
   } else {
-    //const err = new Error('You must be logged in to view this page.');
+    //var err = new Error('You must be logged in to view this page.');
     req.flash('error', 'You must be logged in to view this page.');
     err.status = 401;
     return next(err);
