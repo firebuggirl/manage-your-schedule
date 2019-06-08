@@ -13,10 +13,7 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
 const promisify = require('es6-promisify');
-//require('./models/event');
 
-// const users = require('./routes/users');
-// const api = require('./routes/api');
 
 const expressValidator = require('express-validator');//applies validation methods to every single request
 const app = express();
@@ -36,9 +33,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(expressValidator());
 
-// app.use('/', index);
-// app.use('/users', users);
-// app.use('api/api', api);
+
+
+//CORS Middleware
+app.use((req, res, next) => {
+    res.append('Access-Control-Allow-Origin', ['*']);
+    res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.append('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
 
 // include routes
 const routes = require('./routes/index');

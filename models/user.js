@@ -3,8 +3,11 @@ const bcrypt = require('bcryptjs'); //password hashing function
 const validator = require('validator');//validate email
 const passportLocalMongoose = require('passport-local-mongoose');
 const mongoSanitize = require('express-mongo-sanitize');//added June 20th, test to see if working...
-mongoose.Promise = global.Promise;
 const Todo = require('./todo');
+const jwt = require('jsonwebtoken');
+
+mongoose.Promise = global.Promise;
+
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -84,6 +87,16 @@ UserSchema.pre('save', function(next) {
     next();
   });
 });
+
+UserSchema.methods.generateAuthToken = async function () {
+    const user = this
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET)
+
+    user.tokens = user.tokens.concat({ token })
+    await user.save()
+
+    return token
+}
 const User = mongoose.model('User', UserSchema);//model method creates schema
 module.exports = User;
 

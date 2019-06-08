@@ -1,7 +1,6 @@
 'use strict';
 
 const Todo = require('../models/todo');
-//const Book = require('../models/book');
 const async = require('async');
 const expressValidator = require('express-validator');
 const { body,validationResult } = require('express-validator/check');

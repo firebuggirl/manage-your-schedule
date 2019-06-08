@@ -94,6 +94,7 @@ router.get('/logout', function(req, res, next) {
 
 // GET /login
 router.get('/login', mid.loggedOut, function(req, res, next) {
+  console.log(res);
   return res.render('login', { title: 'Log In'});
 });
 

@@ -1,3 +1,5 @@
+
+require('dotenv').config({ path: __dirname + '/../variables.env' });
 const passport = require('passport');//library to log in
 //Handles all of the logging in, passport.js stuff, all password resets, and email sending
 const crypto = require('crypto');//crypto is native in Node
@@ -5,10 +7,29 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const promisify = require('es6-promisify');
 const mail = require('../handlers/mail');
+const jwt = require('jsonwebtoken');
 
+exports.JWT_Auth = async (req, res) => {
+  const auth = async (req, res, next) => {
+    try {
+        const token = req.header('Authorization').replace('Bearer ', '');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
 
+        if (!user) {
+            throw new Error();
+        }
+
+        req.token = token;
+        req.user = user;
+        next()
+    } catch (e) {
+        res.status(401).send({ error: 'Please authenticate.' })
+    }
+}
+}
 exports.forgot = async (req, res) => {
-  // 1. See if a user with that email exists
+  // 1. See if a user with that e mail exists
   const user = await User.findOne({ email: req.body.email });//find user's email in DB
   if (!user) {
     //req.flash('error', 'No account with that email exists.');
