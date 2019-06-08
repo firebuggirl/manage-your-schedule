@@ -44,6 +44,11 @@ UserSchema.virtual('todos', {
     foreignField: 'todoId'
 });
 
+UserSchema.virtual('todos', {
+    ref: 'Todo',
+    localField: '_id',
+    foreignField: 'todoId'
+});
 // Delete user tasks when user is removed
 UserSchema.pre('remove', async function (next) {
     const user = this

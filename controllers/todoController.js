@@ -46,7 +46,8 @@ exports.todoCreatePost = [
         // Create a todo object with escaped and trimmed data.
         const todo = new Todo(
           { name: req.body.name,
-            details: req.body.details
+            details: req.body.details,
+            todoId: req.body.todoId
            }
         );
 
