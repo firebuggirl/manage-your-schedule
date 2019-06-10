@@ -6,11 +6,13 @@ const mid = require('../middleware');
 //const methodOverride = require('method-override');//use this Eventdleware to be able to conduct a put request on a form to update data
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
+const todoController = require('../controllers/todoController');
+
 const { catchErrors } = require('../handlers/errorHandlers');
 const flash = require('connect-flash');
-require('dotenv').config({ path: '../constiables.env' });
+require('dotenv').config({ path: '../variables.env' });
 
-const todoController = require('../controllers/todoController');
+
 const passport = require('passport');
 passport.initialize();
 
@@ -62,134 +64,50 @@ const Strategy = require('passport-facebook').Strategy;
  router.use(passport.initialize());
  router.use(passport.session());
 
- router.use(function (req, res, next) {
-   res.locals.currentUser = req.session.userId;
-   res.locals.currentUserFb = req.user;
-   next();
- });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/create', mid.requiresLogin, function(req, res, next) {
-  return res.render('create', { title: 'Create Event' });
-});
 
-
+router.get('/login', userController.loginForm);
+router.post('/login', authController.login);
 // GET /logout
-router.get('/logout', function(req, res, next) {
-  if (req.session) {
-    // delete session object
-    req.session.destroy(function(err) {
-      if(err) {
-        return next(err);
-      } else {
-        return res.redirect('/');
-      }
-    });
-  }
-});
+router.get('/logout', authController.logout);
 
-// GET /login
-router.get('/login', mid.loggedOut, function(req, res, next) {
-  console.log(res);
-  return res.render('login', { title: 'Log In'});
-});
-
-//POST /login
-router.post('/login', function(req, res, next) {
-  if (req.body.email && req.body.password) {
-    User.authenticate(req.body.email, req.body.password, function (error, user) {
-      if (error || !user) {
-        //const err = new Error('Wrong email or password.');
-       req.flash('error', 'No account with that email exists.');
-        //err.status = 401;
-        return next();
-      }  else {
-        req.session.userId = user._id;
-         res.locals.message = req.flash();
-        return res.redirect('/todos');
-      }
-    });
-  }
-  else {
-    const err = new Error('Email and password are required.');
-
-    //req.flash('error', 'Email and password are required.');
-    err.status = 401;
-    // return res.redirect('/login');
-
-    return next();
-  }
-});
+//router.post('/account/forgot', catchErrors(authController.forgot));
 
 
-
-router.post('/account/forgot', catchErrors(authController.forgot));
-
-
-// GET /register
-router.get('/register', mid.loggedOut, (req, res, next) => {
-  return res.render('register', { title: 'Sign Up' });
-});
+router.get('/register', userController.registerForm);
 
 // POST /register
-router.post('/register', mid.loggedOut, function(req, res, next) {
-  if (req.body.email &&
-    req.body.name &&
-    req.body.password &&
-    req.body.confirmPassword
-    ) {
-
-      // confirm that user typed same password twice
-      if (req.body.password !== req.body.confirmPassword) {
-        const err = new Error('Passwords do not match.');
-        err.status = 400;
-        return next(err);
-      }
-
-      // create object with form input
-      const userData = {
-        email: req.body.email,
-        name: req.body.name,
-        password: req.body.password
-      };
-
-      // use schema's `create` method to insert document into Mongo
-      User.create(userData, function (error, user) {
-        if (error) {
-          return next(error);
-        } else {
-          req.session.userId = user._id;
-          return res.redirect('/todos');
-        }
-      });
-
-    } else {
-      const err = new Error('All fields required.');
-      err.status = 400;
-      return next(err);
-    }
-});
-
+// 1. Validate the registration data
+// 2. register the user
+// 3. we need to log them in
+router.post('/register',
+  userController.validateRegister,
+  userController.register,
+  authController.login
+);
 
 // GET request for list of all todo.
-router.get('/todos',mid.requiresLogin, todoController.todoList);
-router.get('/todo/create', mid.requiresLogin, todoController.todocreateget);
-router.post('/todo/create', todoController.todoCreatePost);
-// GET request for one Todo.
+router.get('/todos',authController.isLoggedIn, catchErrors(todoController.getTodos));
+router.get('/todos/page/:page', authController.isLoggedIn, catchErrors(todoController.getTodos));
+router.get('/todo/create', authController.isLoggedIn, catchErrors(todoController.todocreateget));
+router.post('/todo/create',authController.isLoggedIn, catchErrors(todoController.addTodo));
+//
+// // GET request for one Todo.
 router.get('/todo/:id', todoController.todoDetail);
-// GET request to delete todo.
-router.get('/todo/:id/delete', todoController.todoDeleteGet);
-// POST request to delete todo.
+// // GET request to delete todo.
+router.get('/todo/:id/delete', catchErrors(todoController.todoDeleteGet));
+// // POST request to delete todo.
 router.post('/todo/:id/delete', todoController.todoDeletePost);
-
-// GET request to update Todo.
-router.get('/todo/:id/update', todoController.todoUpdateGet);
-
-// POST request to update Todo.
-router.post('/todo/:id/update', todoController.todoUpdatePost);
+//
+// // GET request to update Todo.
+router.get('/todo/:id/update', catchErrors(todoController.editTodoGet));
+//
+// // POST request to update Todo.
+router.post('/todo/:id/update', catchErrors(todoController.updateTodo));
 
 module.exports = router;

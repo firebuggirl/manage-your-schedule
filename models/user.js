@@ -1,108 +1,62 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs'); //password hashing function
-const validator = require('validator');//validate email
-const passportLocalMongoose = require('passport-local-mongoose');
-const mongoSanitize = require('express-mongo-sanitize');//added June 20th, test to see if working...
+// const mongoose = require('mongoose');
+// const bcrypt = require('bcryptjs'); //password hashing function
+// const validator = require('validator');//validate email
+// const passportLocalMongoose = require('passport-local-mongoose');
+// const mongoSanitize = require('express-mongo-sanitize');//added June 20th, test to see if working...
 const Todo = require('./todo');
-const jwt = require('jsonwebtoken');
+//const jwt = require('jsonwebtoken');
 
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 mongoose.Promise = global.Promise;
+const bcrypt = require('bcryptjs');//bcrypt is better than md5 for security
+const validator = require('validator');//validate email
+const mongodbErrorHandler = require('mongoose-mongodb-errors');//prettify default MongoDb errors
+const passportLocalMongoose = require('passport-local-mongoose');//add additional fields and methods to create new logins
+
+//mongoose.Promise = global.Promise;
 
 
-const UserSchema = new mongoose.Schema({
-    name: {
-      type: String,
-      required: true,
-      trim: true
-    },
+const UserSchema = new Schema({
+
     email: {
       type: String,
       unique: true,
       lowercase: true,
-      required: true,
+      trim: true,
       validate: [validator.isEmail, 'Invalid Email Address'],
-      trim: true
+      required: 'Please Supply an email address'
     },
-    password: {
+    name: {
       type: String,
-      //minlength: 7,
-      required: true,
-      validate(value) {
-            if (value.toLowerCase().includes('password')) {
-                throw new Error('Password cannot contain "password"')
-            }
-        }
-
+      required: 'Please supply a name',
+      trim: true
     },
     resetPasswordToken: String,
     resetPasswordExpires: Date
 });
 
-UserSchema.virtual('todos', {
-    ref: 'Todo',
-    localField: '_id',
-    foreignField: 'todoId'
-});
+//new in MongoDB
+// Add new field called reviews to schema
+// find reviews where the users _id property === reviews user property
+UserSchema.virtual('todos', {//virtual fields do NOT go into eith an object or into JSON UNLESS you explicityly ask it to...if want to change this....add default setting/object on line #40
+  ref: 'Todo', // what model to link? ..ie., go to another model (Review) and do query on individual reviews that relate to the _id of each store in this model
+  localField: '_id', // which field on the Store model needs to match up w/ which field on our Review model?
+  foreignField: 'user' // which field on the review?
+});//like a 'join' in MySQL
 
-UserSchema.virtual('todos', {
-    ref: 'Todo',
-    localField: '_id',
-    foreignField: 'todoId'
-});
-// Delete user tasks when user is removed
-UserSchema.pre('remove', async function (next) {
-    const user = this
-    await Todo.deleteMany({ todoId: user._id })
-    next()
-});
-mongoSanitize.sanitize(UserSchema); //added Tues, June 20th...check to see if working
-
-mongoSanitize.sanitize(UserSchema, { //added Tues, June 20th...check to see if working
-  replaceWith: '_'
-});
-
-// authenticate input against database documents
-UserSchema.statics.authenticate = function(email, password, callback) {
-  User.findOne({ email: email })
-      .exec(function (error, user) {
-        if (error) {
-          return callback(error);
-        } else if ( !user ) {
-          const err = new Error('User not found.');
-          err.status = 401;
-          return callback(err);
-        }
-        bcrypt.compare(password, user.password , function(error, result) {
-          if (result === true) {
-            return callback(null, user);
-          } else {
-            return callback();
-          }
-        });
-      });
-};
-// hash password before saving to database
-UserSchema.pre('save', function(next) {
-  const user = this;
-  bcrypt.hash(user.password, 10, function(err, hash) {
-    if (err) {
-      return next(err);
-    }
-    user.password = hash;
-    next();
-  });
-});
-
-UserSchema.methods.generateAuthToken = async function () {
-    const user = this
-    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET)
-
-    user.tokens = user.tokens.concat({ token })
-    await user.save()
-
-    return token
+// display reviews on each store
+function autopopulate(next) {
+  this.populate('todos');
+  next();
 }
-const User = mongoose.model('User', UserSchema);//model method creates schema
-module.exports = User;
+
+UserSchema.pre('find', autopopulate);
+UserSchema.pre('findOne', autopopulate);
+
+
 
 UserSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
+UserSchema.plugin(mongodbErrorHandler);
+
+module.exports = mongoose.model('User', UserSchema);

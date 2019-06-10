@@ -1,5 +1,8 @@
 extends layout
 
+
+include mixins/_pagination
+
 block content
   .main.container.clearfix
     .col-md-8.col-md-offset-2
@@ -10,9 +13,10 @@ block content
 
 
       ul
-      each val in list_todos
+      each val in todos
         li
-          a(href=val.url) #{val.name}
-
+          a(href=val.url) Author: #{val.author.name} - Todo: #{val.name} 
       else
         li There are no todo.
+    .col-md-8.col-md-offset-2
+        +pagination(page, pages, count)

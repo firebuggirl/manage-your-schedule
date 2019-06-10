@@ -2,9 +2,9 @@ mixin pagination(page, pages, count)
   .pagination
     .pagination__prev
       if page > 1
-        a(href=`/events/page/${page - 1}`) Prev
+        a(href=`/todos/page/${page - 1}`) Prev
     .pagination__text
       p Page #{page} of #{pages} — #{count} total results
     .pagination__next
       if page < pages
-        a(href=`/events/page/${parseFloat(page) + 1}`) Next
+        a(href=`/todos/page/${parseFloat(page) + 1}`) Next

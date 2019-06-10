@@ -7,10 +7,10 @@ nav.navbar.navbar-fixed-top.navbar-dark.bg-inverse
         | MYS
       .nav-items.clearfix
         //-if !currentUserFb
-        if !currentUser
-          a.nav-item.nav-link(href='register') Sign Up
-        a.nav-item.nav-link(href='/todo/create') Create new todo
-        a.nav-item.nav-link(href='/todos/') Todo List
+        if !user
+          a.nav-item.nav-link(href='register') Register
+        a.nav-item.nav-link(href='/todo/create') Create
+        a.nav-item.nav-link(href='/todos/') Todo
         //-h1 #{user.name}
 
 
@@ -19,7 +19,7 @@ nav.navbar.navbar-fixed-top.navbar-dark.bg-inverse
 
 
       //-if currentUserFb && currentUser
-      if currentUser
+      if user
         div
           img.checkmark.img-circle.hidden-xs-down(src='/images/checkmark.svg', alt='checkmark')
           a.btn.btn-light.pull-md-right(href='/logout') Log out

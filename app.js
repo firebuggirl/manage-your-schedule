@@ -1,80 +1,80 @@
-
-
 const express = require('express');
-const path = require('path');
-//const favicon = require('serve-favicon');
-//const logger = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const flash = require('connect-flash');
-
-
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+//const passport = require('passport-facebook');
 const promisify = require('es6-promisify');
-
-
+const flash = require('connect-flash');
 const expressValidator = require('express-validator');//applies validation methods to every single request
-const app = express();
+const routes = require('./routes/index');
 const helpers = require('./helpers');
 const errorHandlers = require('./handlers/errorHandlers');
+require('./handlers/passport');
+
+// create our Express app
+const app = express();
+
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views')); // this is the folder where we keep our pug files
+app.set('view engine', 'pug'); // we use the engine pug, mustache or EJS work great too
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-//app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+// serves up static files from the public folder. Anything in public/ will just be served up as the file it is
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Takes the raw requests and turns them into usable properties on req.body
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Exposes a bunch of methods for validating data. Used heavily on userController.validateRegister
 app.use(expressValidator());
 
+// populates req.cookies with any cookies that came along with the request
+app.use(cookieParser());
+
+// Sessions allow us to store data on visitors from request to request
+// This keeps users logged in and allows us to send flash messages
+app.use(session({
+  secret: process.env.SECRET,
+  key: process.env.KEY,
+  resave: false,
+  saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: mongoose.connection })
+}));
 
 
-//CORS Middleware
-app.use((req, res, next) => {
-    res.append('Access-Control-Allow-Origin', ['*']);
-    res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.append('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
 
-// include routes
-const routes = require('./routes/index');
+// // Passport JS is what we use to handle our logins
+ app.use(passport.initialize());
+ app.use(passport.session());
 
-app.use('/', routes);
 
-// catch 404 and forward to error handler
-// app.use(function(req, res, next) {
-//   let err = new Error('Not Found');
-//   err.status = 404;
-//   next(err);
-// });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
+// // The flash middleware let's us use req.flash('error', 'Shit!'), which will then pass that message to the next page the user requests
 app.use(flash());
+
 // pass variables to our templates + all requests
 app.use((req, res, next) => {
   res.locals.h = helpers;
   res.locals.flashes = req.flash();//pull out any flashes that need to be shown and put in locals
   res.locals.user = req.user || null;// locals are all of the variables available to you in your template
   res.locals.currentPath = req.path;//passport makes req.user available to us by passing the user to our 'locals'
+
   next();
 });
+
+// promisify some callback based APIs
+app.use((req, res, next) => {
+  req.login = promisify(req.login, req);
+  next();
+});
+
+// After allllll that above middleware, we finally handle our own routes!
+app.use('/', routes);
 
 // If that above routes didnt work, we 404 them and forward to error handler
 app.use(errorHandlers.notFound);
@@ -90,5 +90,20 @@ if (app.get('env') === 'development') {
 
 // production error handler
 app.use(errorHandlers.productionErrors);
+
+
+
+//CORS Middleware
+// app.use((req, res, next) => {
+//     res.append('Access-Control-Allow-Origin', ['*']);
+//     res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+//     res.append('Access-Control-Allow-Headers', 'Content-Type');
+//     next();
+// });
+
+
+
+
+
 
 module.exports = app;

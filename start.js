@@ -34,16 +34,16 @@ mongoose.connection.on('error', (err) => {
 const app = require('./app');
 
 // Constants for Docker
-//  const PORT = 3000;
+//  const PORT = 8000;
 // const HOST = '0.0.0.0';//Docker host
 //
 //
  // app.listen(PORT, HOST);
  // console.log(`Running on http://${HOST}:${PORT}`);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 8000);
 const server = app.listen(app.get('port'), () => {
   console.log(`Express running → PORT ${server.address().port}`);
 });
