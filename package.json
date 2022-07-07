@@ -39,7 +39,7 @@
     "jsonwebtoken": "^8.5.1",
     "juice": "^4.0.2",
     "md5": "^2.2.1",
-    "moment": "^2.17.1",
+    "moment": "^2.29.4",
     "mongodb": "^3.0.4",
     "mongoose": "^5.0.9",
     "mongoose-mongodb-errors": "0.0.2",
